@@ -1,55 +1,81 @@
 package UDP;
 
+import Application.ATM;
+import Errors.ErrorCheck;
 import Security.DiffieHelman;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.io.ObjectInputStream;
+import java.net.*;
+import java.util.Map;
 
 public class Server {
-    private static String secretCode = "999";
+    //    private static String SecretCode = "999";
+    static  public int buffSize= 256;
+    public static final int port = 4300;
+
     public static void main(String[] args) throws IOException {
+        DatagramSocket serverSocket;
 
-        DatagramSocket serverSocket = new DatagramSocket(4300);
-        byte[] receivedData = new byte[65535];
+        // byte[] receivedData = new byte[65535];
 
-        DatagramPacket inPacket = null;
-        while (true) {
+//        DatagramPacket inPacket = null;
+//        while (true) {
+//
+//            inPacket = new DatagramPacket(receivedData, receivedData.length);
+//
+//            // receive the data in byte buffer.
+//            serverSocket.receive(inPacket);
+//
+//            String finString = new String(receivedData, 0, inPacket.getLength());
+//
+//            String decryptedData = DiffieHelman.decryption(finString, SecretCode);
+//            System.out.println("Client:-" + decryptedData);
+//
+//            // exit the server if the client sends "bye"
+//            if (data(receivedData).toString().equals("bye")) {
+//                System.out.println("Client sent bye.....EXITING");
+//                break;
+//            }
+//
+//            // clear the buffer after every message
+//            receivedData = new byte[65535];
+//        }
+        try{
+            serverSocket = new DatagramSocket(4300);
+            System.out.println("Wait a client to connect");
+        } catch ( SocketException se) {
+            System.err.println("The socket can't be created");
+            return;
+        }
 
-            inPacket = new DatagramPacket(receivedData, receivedData.length);
+        DatagramPacket inPacket = new DatagramPacket(new byte[buffSize], buffSize);
+        DiffieHelman diffieHelman = new DiffieHelman();
+        diffieHelman.setPublicKey(diffieHelman.getPKey());
 
-            // receive the data in byte buffer.
-            serverSocket.receive(inPacket);
+        while(true) {
+            try {
+                inPacket.setLength(buffSize);
+                serverSocket.receive(inPacket);
+                byte[] inData = inPacket.getData();
+                byte[] decryptedInData = diffieHelman.decryption(inData);
+                ErrorCheck errorCheck = new ErrorCheck();
+                errorCheck.getCRC32Checksum(decryptedInData);
 
-            String finString = new String(receivedData, 0, inPacket.getLength());
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(decryptedInData);
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                ATM atm = (ATM) objectInputStream.readObject();
 
-            String decryptedData = DiffieHelman.decryption(finString, secretCode);
-            System.out.println("Client:-" + decryptedData);
-
-            // exit the server if the client sends "bye"
-            if (data(receivedData).toString().equals("bye"))
-            {
-                System.out.println("Client sent bye.....EXITING");
-                break;
+                System.out.println("C:" + decryptedInData);
+            } catch (SocketTimeoutException ste) {    // receive() timed out
+                System.err.println("Timed out!");
+            } catch (Exception ioe) {
+                System.err.println("Receive is bad");
+                ioe.printStackTrace();
             }
 
-            // clear the buffer after every message
-            receivedData = new byte[65535];
         }
-    }
-
-    // method to convert the byte array data into a string representation
-    public static StringBuilder data(byte[] a)
-    {
-        if (a == null)
-            return null;
-        StringBuilder ret = new StringBuilder();
-        int i = 0;
-        while (a[i] != 0)
-        {
-            ret.append((char) a[i]);
-            i++;
-        }
-        return ret;
     }
 }

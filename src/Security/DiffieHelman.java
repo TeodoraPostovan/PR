@@ -27,7 +27,7 @@ public class DiffieHelman {
     private static String salt = "terceSmI999";
     KeyAgreement keyA;
 
-    DiffieHelman() { setKeyPairGenerator(); }
+    public DiffieHelman() { setKeyPairGenerator(); }
 
     public PublicKey getPKey() {return pKey;}
     protected Key keyGenerator() {return new SecretKeySpec(key, "AES");}
