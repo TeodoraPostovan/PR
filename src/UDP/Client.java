@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class Client extends ATM {
 
-    static public int port = 4300;
+    static public int port = 2020;
     private static final int TIMEOUT = 2000;   // Resend timeout
     private static final int MaxRetransmission = 4;     // Maximum retransmissions
     // private static String SecretCode = "999";
