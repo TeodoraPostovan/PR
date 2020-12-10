@@ -62,7 +62,7 @@ public class Server {
                 byte[] inData = inPacket.getData();
                 byte[] decryptedInData = diffieHelman.decryption(inData);
                 ErrorCheck errorCheck = new ErrorCheck();
-                //errorCheck.getCRC32Checksum(decryptedInData);
+                errorCheck.getCRC32Checksum(decryptedInData);
                 //System.out.println(errorCheck.getCRC32Checksum(inData));
 
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(decryptedInData);
