@@ -10,6 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.security.KeyPairGenerator;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
@@ -23,20 +24,15 @@ public class DiffieHelman {
     private PublicKey pKey;
     byte[] key;
     static Random random = new SecureRandom();
-    private static  String SecretCode = "999ImSecret";
-    private static String salt = "terceSmI999";
     KeyAgreement keyA;
 
     public DiffieHelman() { setKeyPairGenerator(); }
-
-    public PublicKey getPKey() {return pKey;}
-    protected Key keyGenerator() {return new SecretKeySpec(key, "AES");}
 
     private void setKeyPairGenerator() {
         KeyPairGenerator keyPG = null;
         try{
             keyPG = KeyPairGenerator.getInstance("EC");
-            keyPG.initialize(128);
+            keyPG.initialize(256);
             KeyPair keyP = keyPG.generateKeyPair();
             pKey = keyP.getPublic();
             keyA = KeyAgreement.getInstance("ECDH");
@@ -68,6 +64,9 @@ public class DiffieHelman {
         }
     }
 
+    private static  String SecretCode = "999ImSecret";
+    private static String salt = "ksncuiapscdv";
+
     public static byte[] encryption(byte[] ENC) {
         try {
             // setKey(code);
@@ -75,11 +74,11 @@ public class DiffieHelman {
             IvParameterSpec ivs = new IvParameterSpec(ivp);
 
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec ks = new PBEKeySpec(SecretCode.toCharArray(), salt.getBytes(), 65536, 128);
+            KeySpec ks = new PBEKeySpec(SecretCode.toCharArray(), salt.getBytes(), 65536, 256);
             SecretKey spec = skf.generateSecret(ks);
             SecretKeySpec secretKeySpec = new SecretKeySpec(spec.getEncoded(),"AES");
 
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivs);
             return Base64.getEncoder().encode(cipher.doFinal(ENC));
         } catch (Exception e) {
@@ -96,11 +95,11 @@ public class DiffieHelman {
             IvParameterSpec ivs = new IvParameterSpec(ivp);
 
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec ks = new PBEKeySpec(SecretCode.toCharArray(), salt.getBytes(), 65536, 128);
+            KeySpec ks = new PBEKeySpec(SecretCode.toCharArray(), salt.getBytes(), 65536, 256);
             SecretKey spec = skf.generateSecret(ks);
             SecretKeySpec secretKeySpec = new SecretKeySpec(spec.getEncoded(),"AES");
 
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivs);
             byte[] decryptedS = cipher.doFinal(Base64.getMimeDecoder().decode(DECR));
             return decryptedS;
@@ -109,4 +108,7 @@ public class DiffieHelman {
         }
         return null;
     }
+
+    public PublicKey getPKey() {return pKey;}
+    protected Key keyGenerator() {return new SecretKeySpec(key, "AES");}
 }
