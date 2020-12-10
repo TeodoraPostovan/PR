@@ -88,3 +88,9 @@ I tried to implement the first Operation of login with 2 steps:
 ![Login](Screenshot_2.png)
 But there are many bugs because of some flaw in the logic of the implementation. For example, even I enter a non-existing
 card number, I also received response ```Message received from: 127.0.0.1```
+
+* Sources
+1. https://www.codejava.net/java-se/networking/java-udp-client-server-program-example
+2. https://www.binarytides.com/udp-socket-programming-in-java/
+3. https://www.cs.wmich.edu/alfuqaha/cs595/lectures/lecture6.pdf
+4. http://tutorials.jenkov.com/java-networking/udp-datagram-sockets.html
