@@ -2,7 +2,7 @@
 
 Student: Postovan Teodora
 
-Teacher: Burlacu Alexandru
+Professor: Burlacu Alexandru
 
 ## Task Description
  * Implement a protocol atop UDP, with error checking and retransmissions. Limit the number of retries for retransmissions.
