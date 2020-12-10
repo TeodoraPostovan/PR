@@ -18,7 +18,7 @@ import java.util.Random;
 public class DiffieHelman {
 
     //private static byte[] key;
-    private static SecretKeySpec secretCode;
+    //private static SecretKeySpec secretCode;
 
     private PublicKey pKey;
     byte[] key;
